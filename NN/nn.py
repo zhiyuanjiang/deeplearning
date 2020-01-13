@@ -5,6 +5,8 @@ import sklearn.datasets
 import sklearn.linear_model
 import matplotlib
 
+# implementation nn by myself
+# this is a simple neural network of three layers
 # addr:https://github.com/dennybritz/nn-from-scratch/blob/master/nn-from-scratch.ipynb
 """ record
 at the begin, my derivative_function is:
@@ -59,8 +61,8 @@ plt.show()
 def init_weights(n1, n2, n3):
     W1 = np.random.randn(n2, n1)
     W2 = np.random.randn(n3, n2)
-    b1 = np.random.randn(n2, 1)
-    b2 = np.random.randn(n3, 1)
+    b1 = np.zeros((n2, 1))
+    b2 = np.zeros((n3, 1))
     params = {
         'W1':W1,'W2':W2,'b1':b1,'b2':b2
     }
@@ -70,7 +72,7 @@ def ReLu(x):
     return np.maximum(0, x)
 
 def derivative_ReLu(x):
-    return np.where(x > 0.5, 1., 0.)
+    return np.where(x > 0, 1., 0.)
 
 def loss_function(a, y):
     return -y*np.log(a)-(1-y)*np.log(1-a)
@@ -93,11 +95,10 @@ def forward_propagation(X, y, params, m):
 def backward_propagation(X, y, params, var, m, lr):
     dZ2 = var['A2']-y
     dW2 = 1./m*np.dot(dZ2, var['A1'].T)
-    db2 = 1./m*np.sum(dZ2, axis=1)
+    db2 = 1./m*np.sum(dZ2, axis=1, keepdims=True)
     dZ1 = np.dot(params['W2'].T, dZ2)*derivative_ReLu(var['Z1'])
     dW1 = 1./m*np.dot(dZ1, X.T)
-    db1 = 1./m*np.sum(dZ1, axis=1)
-    db1 = db1.reshape(params['b1'].shape)
+    db1 = 1./m*np.sum(dZ1, axis=1, keepdims=True)
 
     params['W1'] -= lr*dW1
     params['b1'] -= lr*db1
@@ -136,8 +137,8 @@ def predict(params, x):
 X = X.T
 attr_num = X.shape[0]
 m = X.shape[1]
-params = init_weights(attr_num, 8, 1)
-params, re = train(X, y, params, 8000, m, 0.1)
+params = init_weights(attr_num, 5, 1)
+params, re = train(X, y, params, 20000, m, 0.1)
 
 X = X.T
 plot_decision_boundary(lambda x:predict(params, x))
