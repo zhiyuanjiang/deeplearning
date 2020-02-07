@@ -113,8 +113,8 @@ def predict(model, x):
 
 attr_num = X.shape[1]
 m = X.shape[0]
-params = init_weights(attr_num, 11, 11)
-build_model(X.T, y, params, 20000, 0.1)
+params = init_weights(attr_num, 3, 3)
+build_model(X.T, y, params, 20000, 0.08)
 plot_decision_boundary(lambda x:predict(params,x))
 
 plt.show()

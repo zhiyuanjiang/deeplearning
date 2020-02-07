@@ -108,30 +108,46 @@ def test(test_loader, model, device, epoch):
 
 def main():
 
-    mydata = MydataSet('F:\\deeplearning-data\\smile-data\\datasets\\picture\\', 600,
-                       'F:\\deeplearning-data\\smile-data\\datasets\\train_set_y.txt')
-    mydata_train_loader = DataLoader(mydata, batch_size=600, shuffle=False)
+    # mydata = MydataSet('F:\\deeplearning-data\\smile-data\\datasets\\picture\\', 600,
+    #                    'F:\\deeplearning-data\\smile-data\\datasets\\train_set_y.txt')
+    # mydata_train_loader = DataLoader(mydata, batch_size=600, shuffle=False)
+    #
+    # mydata = MydataSet('F:\\deeplearning-data\\smile-data\\datasets\\test\\', 150,
+    #                    'F:\\deeplearning-data\\smile-data\\datasets\\test_set_y.txt')
+    # mydata_test_loader = DataLoader(mydata, batch_size=150, shuffle=False)
+    #
+    # # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cpu')
+    #
+    # model = Net().to(device)
+    #
+    # optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.8)
+    #
+    # ls = []
+    # for epoch in range(50):
+    #     val = train(mydata_train_loader, model, device, optimizer, epoch+1)
+    #     test(mydata_test_loader, model, device, epoch+1)
+    #     ls.append(val)
+    #
+    # a = [x for x in range(50)]
+    # plt.plot(a, ls, 'red')
+    # plt.show()
+    #
+    # torch.save(model.state_dict(), 'F:\\deeplearning-data\\smile-data\\smile-params.pth')
 
-    mydata = MydataSet('F:\\deeplearning-data\\smile-data\\datasets\\test\\', 150,
-                       'F:\\deeplearning-data\\smile-data\\datasets\\test_set_y.txt')
-    mydata_test_loader = DataLoader(mydata, batch_size=150, shuffle=False)
-
-    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    device = torch.device('cpu')
-
-    model = Net().to(device)
-
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.8)
-
-    ls = []
-    for epoch in range(50):
-        val = train(mydata_train_loader, model, device, optimizer, epoch+1)
-        test(mydata_test_loader, model, device, epoch+1)
-        ls.append(val)
-
-    a = [x for x in range(50)]
-    plt.plot(a, ls, 'red')
-    plt.show()
+    model = Net()
+    model.load_state_dict(torch.load('F:\\deeplearning-data\\smile-data\\smile-params.pth'))
+    model.eval()
+    image = Image.open('F:\\deeplearning-data\\smile-data\\no-smile3.jpg')
+    image = image.resize((64, 64), Image.ANTIALIAS)
+    image = transforms.ToTensor()(image)
+    data = torch.zeros((1, 3, 64, 64))
+    data[0,:,:,:] = image
+    out = model(data)
+    if out[0].item() > 0.5:
+        print('he is smile!')
+    else:
+        print('he is not smile!')
 
 
 if __name__ == '__main__':
